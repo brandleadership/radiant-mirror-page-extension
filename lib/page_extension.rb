@@ -35,25 +35,21 @@ module PageExtension
       end
     end
 
-    def find_by_mirror_url(url, live = true, clean = true)
+    def find_by_mirror_url(url, live = true, clean = true, mirror_url = nil, mirror_root_url = nil)
       if (class_name == "MirrorPage")
         page = Page.find_by_id(mirror_page)
-        #url[] = 
+        mirror_url = self.url
+        mirror_root_url = page.url
       else
         page = self
       end
       my_url = self.url
-
-      mirror_page = self
-      while (mirror_page.class_name != "MirrorPage")
-        mirror_page = mirror_page.parent
-      end
-      my_url[''] = mirror_page.url
+      my_url[mirror_root_url]  = mirror_url if self.class_name != "MirrorPage"
       if (my_url == url) && (not live or published?)
         page
       elsif (url =~ /^#{Regexp.quote(my_url)}([^\/]*)/)
         slug_child = page.children.find_by_slug($1)
-        slug_child.find_by_mirror_url(url, live, clean)
-      end
+        slug_child.find_by_mirror_url(url, live, clean, mirror_url, mirror_root_url)
+      end 
     end
 end
