@@ -1,0 +1,6 @@
+%tr
+  %th.label
+    Mirror Page
+  %td
+    %label Choose a page?
+    = select "page", :mirror_page, Page.find(:all).collect{|g| [g.title, g.id]}.unshift(['None', nil])
