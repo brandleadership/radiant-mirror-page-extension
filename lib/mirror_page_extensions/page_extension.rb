@@ -1,4 +1,5 @@
-module PageExtension
+module MirrorPageExtensions
+  module PageExtension
 
     def self.included(base)
       base.instance_eval do
@@ -46,10 +47,19 @@ module PageExtension
       my_url = self.url
       my_url[mirror_root_url]  = mirror_url if self.class_name != "MirrorPage"
       if (my_url == url) && (not live or published?)
-        page
+        if (page.class_name == "IndexPage")
+          published_children = page.children.delete_if{|c| c.status_id != 100 }
+          url = published_children.first.url
+          url[mirror_root_url]  = mirror_url
+          page.instance_variable_set(:@redirect_url, url)
+          page
+        else
+          page
+        end
       elsif (url =~ /^#{Regexp.quote(my_url)}([^\/]*)/)
         slug_child = page.children.find_by_slug($1)
         slug_child.find_by_mirror_url(url, live, clean, mirror_url, mirror_root_url)
-      end 
+      end
     end
+  end
 end

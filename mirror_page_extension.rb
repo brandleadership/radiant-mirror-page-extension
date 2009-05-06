@@ -15,7 +15,8 @@ class MirrorPageExtension < Radiant::Extension
   def activate
     # admin.tabs.add "Page Mirror", "/admin/page_mirror", :after => "Layouts", :visibility => [:all]
     admin.pages.edit.add :extended_metadata, 'mirror_page'
-    Page.send :include, PageExtension
+    Page.send :include, MirrorPageExtensions::PageExtension
+    IndexPage.send :include, MirrorPageExtensions::IndexPageExtension
   end
   
   def deactivate
